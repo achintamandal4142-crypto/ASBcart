@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASBcart - Online Shopping for Mobiles, Electronics, Fashion & More</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        flipkart: {
+                            blue: '#2874f0',
+                            yellow: '#ffe11b',
+                            orange: '#fb641b',
+                            darkblue: '#172337',
+                            green: '#388e3c'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <header class="bg-flipkart-blue sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 gap-4">
+                
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-2 shrink-0 cursor-pointer" onclick="resetFilter()">
+                    <div class="bg-white text-flipkart-blue font-bold px-2.5 py-1 rounded shadow text-xl tracking-tight flex items-center gap-1">
+                        <i class="fa-solid fa-cart-shopping text-flipkart-orange"></i>
+                        <span>ASB<span class="text-flipkart-orange italic font-light">cart</span></span>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-2xl relative">
+                    <div class="flex">
+                        <input type="text" id="searchInput" placeholder="Search for products, brands and more" 
+                            class="w-full px-4 py-2 text-sm rounded-l bg-white focus:outline-none shadow-inner"
+                            oninput="handleSearch(this.value)">
+                        <button class="bg-white text-flipkart-blue px-4 rounded-r flex items-center justify-center hover:bg-gray-50 transition" onclick="triggerSearch()">
+                            <i class="fa-solid fa-magnifying-glass text-flipkart-blue"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Actions (Login, Cart, More) -->
+                <div class="flex items-center space-x-6 text-white font-medium">
+                    <button onclick="openLoginModal()" class="hidden sm:flex items-center gap-1 bg-white text-flipkart-blue px-5 py-1.5 rounded font-semibold shadow hover:bg-gray-100 transition">
+                        <i class="fa-regular fa-user"></i> Login
+                    </button>
+                    
+                    <button onclick="toggleCartDrawer()" class="relative flex items-center gap-2 hover:text-flipkart-yellow transition py-1">
+                        <div class="relative">
+                            <i class="fa-solid fa-cart-shopping text-xl"></i>
+                            <span id="cartBadge" class="absolute -top-2 -right-3 bg-flipkart-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-flipkart-blue">0</span>
+                        </div>
+                        <span class="hidden md:inline font-semibold">Cart</span>
+                    </button>
+
+                    <div class="hidden lg:flex items-center gap-1 cursor-pointer hover:text-flipkart-yellow transition">
+                        <span>Become a Seller</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Subheader Bar -->
+    <nav class="bg-white shadow-sm border-b hidden md:block">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-3 overflow-x-auto space-x-8 text-sm font-semibold">
+                <button onclick="filterCategory('all')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-border-all"></i>
+                    </div>
+                    <span>All Products</span>
+                </button>
+                <button onclick="filterCategory('Electronics')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-laptop"></i>
+                    </div>
+                    <span>Electronics</span>
+                </button>
+                <button onclick="filterCategory('Mobiles')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <span>Mobiles</span>
+                </button>
+                <button onclick="filterCategory('Fashion')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                    <span>Fashion</span>
+                </button>
+                <button onclick="filterCategory('Appliances')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-tv"></i>
+                    </div>
+                    <span>Appliances</span>
+                </button>
+                <button onclick="filterCategory('Grocery')" class="flex flex-col items-center gap-1 text-gray-700 hover:text-flipkart-blue transition shrink-0 group">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 text-flipkart-blue text-lg">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                    </div>
+                    <span>Grocery</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Carousel -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="relative rounded-xl overflow-hidden shadow-lg mb-8 bg-gradient-to-r from-blue-900 via-flipkart-blue to-blue-500 text-white min-h-[260px] flex items-center">
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div id="carouselSlide" class="relative z-10 px-8 sm:px-12 py-10 max-w-xl transition-all duration-500">
+                <span class="bg-flipkart-orange text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Big Billion Days Sale</span>
+                <h1 id="carouselTitle" class="text-3xl sm:text-5xl font-extrabold mt-3 tracking-tight">ASBcart Mega Festival Deals</h1>
+                <p id="carouselDesc" class="text-blue-100 mt-2 text-sm sm:text-base">Up to 80% OFF on Top Electronics, Fashion, and Smart Gadgets. Limited period offer!</p>
+                <button onclick="filterCategory('all')" class="mt-5 bg-white text-flipkart-blue font-bold px-6 py-2.5 rounded shadow hover:bg-yellow-300 hover:text-gray-900 transition flex items-center gap-2">
+                    <span>Shop Now</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <!-- Carousel Controls -->
+            <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Product Section Heading -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 id="sectionTitle" class="text-2xl font-bold text-gray-900">Featured ASBcart Products</h2>
+                <p class="text-sm text-gray-500">Best picks curated for you with assured warranty</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <select id="sortSelect" onchange="sortProducts(this.value)" class="bg-white border rounded px-3 py-1.5 text-sm font-medium shadow-sm focus:outline-none focus:border-flipkart-blue">
+                    <option value="featured">Sort by: Featured</option>
+                    <option value="low-high">Price: Low to High</option>
+                    <option value="high-low">Price: High to Low</option>
+                    <option value="rating">Customer Rating</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Dynamic Products Injected via JS -->
+        </div>
+    </main>
+
+    <!-- Slide-over Shopping Cart Drawer -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+        <div class="absolute inset-0 bg-black/50 transition-opacity" onclick="toggleCartDrawer()"></div>
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col">
+                <!-- Cart Header -->
+                <div class="bg-flipkart-blue px-6 py-4 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <h3 class="font-bold text-lg">My Shopping Cart (<span id="cartCountTitle">0</span>)</h3>
+                    </div>
+                    <button onclick="toggleCartDrawer()" class="text-white hover:text-gray-200 text-xl font-bold p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Cart Items Body -->
+                <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-6 space-y-4 divide-y">
+                    <!-- Cart items injected here -->
+                </div>
+
+                <!-- Cart Footer & Checkout Summary -->
+                <div id="cartFooter" class="border-t bg-gray-50 p-6 shadow-inner hidden">
+                    <div class="space-y-2 mb-4 text-sm">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span id="cartSubtotal">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Delivery Charges</span>
+                            <span class="text-green-600 font-semibold">FREE</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-gray-900 border-t pt-2">
+                            <span>Total Amount</span>
+                            <span id="cartTotal" class="text-flipkart-blue">₹0</span>
+                        </div>
+                    </div>
+                    <button onclick="openCheckoutModal()" class="w-full bg-flipkart-orange hover:bg-orange-600 text-white font-bold py-3 rounded shadow transition flex items-center justify-center gap-2">
+                        <span>Place Order</span> <i class="fa-solid fa-shield-halved"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden px-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 relative overflow-hidden animate-fade-in">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-flipkart-darkblue mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-flipkart-blue"></i> ASBcart Secure Checkout
+            </h3>
+            <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Full Name</label>
+                    <input type="text" required class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-flipkart-blue" placeholder="Enter your full name">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Delivery Address</label>
+                    <textarea required rows="2" class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-flipkart-blue" placeholder="House no, Street, City, Pincode"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone Number</label>
+                        <input type="tel" required class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-flipkart-blue" placeholder="10-digit mobile number">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Payment Method</label>
+                        <select class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-flipkart-blue">
+                            <option>Cash on Delivery (COD)</option>
+                            <option>UPI / Google Pay / PhonePe</option>
+                            <option>Credit / Debit Card</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-flipkart-blue hover:bg-blue-700 text-white font-bold py-3 rounded shadow transition mt-4">
+                    Confirm Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden px-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="bg-flipkart-blue text-white p-6 -mx-6 -mt-6 rounded-t-xl mb-6">
+                <h3 class="text-2xl font-bold">Login to ASBcart</h3>
+                <p class="text-xs text-blue-100 mt-1">Get access to your Orders, Wishlist and Recommendations</p>
+            </div>
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Enter Email/Mobile number</label>
+                    <input type="text" required class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-flipkart-blue" placeholder="name@example.com">
+                </div>
+                <button type="submit" class="w-full bg-flipkart-orange hover:bg-orange-600 text-white font-bold py-3 rounded shadow transition">
+                    Request OTP
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-flipkart-darkblue text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Product added to cart successfully!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-flipkart-darkblue text-gray-300 text-xs mt-16 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-gray-500 uppercase font-bold tracking-wider mb-4">About ASBcart</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:underline">Contact Us</a></li>
+                    <li><a href="#" class="hover:underline">About Us</a></li>
+                    <li><a href="#" class="hover:underline">Careers</a></li>
+                    <li><a href="#" class="hover:underline">ASBcart Stories</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-gray-500 uppercase font-bold tracking-wider mb-4">Help</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:underline">Payments</a></li>
+                    <li><a href="#" class="hover:underline">Shipping</a></li>
+                    <li><a href="#" class="hover:underline">Cancellation & Returns</a></li>
+                    <li><a href="#" class="hover:underline">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-gray-500 uppercase font-bold tracking-wider mb-4">Policy</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:underline">Return Policy</a></li>
+                    <li><a href="#" class="hover:underline">Terms Of Use</a></li>
+                    <li><a href="#" class="hover:underline">Security</a></li>
+                    <li><a href="#" class="hover:underline">Privacy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-gray-500 uppercase font-bold tracking-wider mb-4">Registered Office Address:</h4>
+                <p class="leading-relaxed text-gray-400">
+                    ASBcart Internet Private Limited,<br>
+                    Digital Tech Park, Outer Ring Road,<br>
+                    Bengaluru, India.<br>
+                    CIN : U51109KA2026PTC<br>
+                    Telephone: <span class="text-blue-400">1800 202 0000</span>
+                </p>
+            </div>
+        </div>
+        <div class="bg-[#111927] py-6 border-t border-gray-800 text-center text-gray-400">
+            <p>&copy; 2026 ASBcart Digital | Seamless Shopping Experience. Inspired by Flipkart.</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // Mock Product Database
+        const products = [
+            {
+                id: 1,
+                name: "ASBpulse 5G Smartphone (8GB RAM, 128GB)",
+                category: "Mobiles",
+                price: 14999,
+                originalPrice: 21999,
+                rating: 4.4,
+                reviewsCount: 3240,
+                image: "https://placehold.co/400x400/2874f0/ffffff?text=ASBpulse+5G",
+                tag: "Bestseller"
+            },
+            {
+                id: 2,
+                name: "ASBbook Pro 14 Laptop (Intel Core i5, 16GB)",
+                category: "Electronics",
+                price: 52999,
+                originalPrice: 74999,
+                rating: 4.6,
+                reviewsCount: 1420,
+                image: "https://placehold.co/400x400/172337/ffffff?text=ASBbook+Pro",
+                tag: "Top Rated"
+            },
+            {
+                id: 3,
+                name: "ASBsonic Wireless Earbuds with ANC",
+                category: "Electronics",
+                price: 1499,
+                originalPrice: 3999,
+                rating: 4.2,
+                reviewsCount: 8900,
+                image: "https://placehold.co/400x400/388e3c/ffffff?text=ASBsonic+Buds",
+                tag: "62% Off"
+            },
+            {
+                id: 4,
+                name: "Men Slim Fit Casual Checked Shirt",
+                category: "Fashion",
+                price: 599,
+                originalPrice: 1999,
+                rating: 3.9,
+                reviewsCount: 540,
+                image: "https://placehold.co/400x400/fb641b/ffffff?text=Checked+Shirt",
+                tag: "Special Price"
+            },
+            {
+                id: 5,
+                name: "Smart LED TV 43 inch 4K Ultra HD",
+                category: "Appliances",
+                price: 24999,
+                originalPrice: 39999,
+                rating: 4.5,
+                reviewsCount: 2100,
+                image: "https://placehold.co/400x400/2874f0/ffffff?text=Smart+4K+TV",
+                tag: "Assured 2Yr Warranty"
+            },
+            {
+                id: 6,
+                name: "Organic Almonds & Cashews Combo (1kg)",
+                category: "Grocery",
+                price: 899,
+                originalPrice: 1500,
+                rating: 4.7,
+                reviewsCount: 630,
+                image: "https://placehold.co/400x400/388e3c/ffffff?text=Dry+Fruits+Combo",
+                tag: "Fresh Grocery"
+            },
+            {
+                id: 7,
+                name: "ASBfit Smartwatch with AMOLED Display",
+                category: "Electronics",
+                price: 2499,
+                originalPrice: 5999,
+                rating: 4.3,
+                reviewsCount: 4120,
+                image: "https://placehold.co/400x400/172337/ffffff?text=ASBfit+Watch",
+                tag: "Trending"
+            },
+            {
+                id: 8,
+                name: "Women Ethnic Embroidered Kurta Set",
+                category: "Fashion",
+                price: 799,
+                originalPrice: 2499,
+                rating: 4.1,
+                reviewsCount: 980,
+                image: "https://placehold.co/400x400/fb641b/ffffff?text=Kurta+Set",
+                tag: "Best Deal"
+            }
+        ];
+
+        let cart = [];
+        let currentFilteredProducts = [...products];
+        let currentCategory = 'all';
+
+        // Hero Carousel Slides
+        const slides = [
+            { title: "ASBcart Mega Festival Deals", desc: "Up to 80% OFF on Top Electronics, Fashion, and Smart Gadgets. Limited period offer!" },
+            { title: "ASBpulse 5G Launch Special", desc: "Get up to ₹5,000 instant discount with leading bank debit & credit cards." },
+            { title: "Big Fashion Carnival", desc: "Trendy styles starting at just ₹399. Free delivery across India." }
+        ];
+        let currentSlideIndex = 0;
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const slide = slides[currentSlideIndex];
+            document.getElementById('carouselTitle').innerText = slide.title;
+            document.getElementById('carouselDesc').innerText = slide.desc;
+        }
+
+        // Render Product Grid
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-16 text-center text-gray-500">
+                    <i class="fa-solid fa-box-open text-4xl mb-3 text-gray-400"></i>
+                    <p class="text-lg font-semibold">No products found matching your search.</p>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(p => `
+                <div class="bg-white rounded-lg shadow-sm hover:shadow-xl transition duration-300 p-4 flex flex-col justify-between border group relative">
+                    <div>
+                        <div class="relative overflow-hidden rounded bg-gray-50 mb-3 h-48 flex items-center justify-center">
+                            <span class="absolute top-2 left-2 bg-flipkart-orange text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                ${p.tag}
+                            </span>
+                            <img src="${p.image}" alt="${p.name}" class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                        </div>
+                        <h3 class="font-semibold text-gray-800 text-sm line-clamp-2 mb-1">${p.name}</h3>
+                        <div class="flex items-center gap-1.5 mb-2">
+                            <span class="bg-green-600 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                                ${p.rating} <i class="fa-solid fa-star text-[10px]"></i>
+                            </span>
+                            <span class="text-gray-400 text-xs">(${p.reviewsCount.toLocaleString()})</span>
+                        </div>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-lg font-bold text-gray-900">₹${p.price.toLocaleString()}</span>
+                            <span class="text-xs text-gray-400 line-through">₹${p.originalPrice.toLocaleString()}</span>
+                            <span class="text-xs text-green-600 font-bold">
+                                ${Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% off
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="w-full bg-flipkart-yellow hover:bg-yellow-400 text-gray-900 font-bold py-2 rounded text-sm shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Filter Categories
+        function filterCategory(category) {
+            currentCategory = category;
+            const titleElem = document.getElementById('sectionTitle');
+            if (category === 'all') {
+                currentFilteredProducts = [...products];
+                titleElem.innerText = "Featured ASBcart Products";
+            } else {
+                currentFilteredProducts = products.filter(p => p.category.toLowerCase() === category.toLowerCase());
+                titleElem.innerText = `${category} Store`;
+            }
+            renderProducts(currentFilteredProducts);
+        }
+
+        function resetFilter() {
+            filterCategory('all');
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Search Handlers
+        function handleSearch(query) {
+            const q = query.toLowerCase().trim();
+            currentFilteredProducts = products.filter(p => 
+                p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+            );
+            renderProducts(currentFilteredProducts);
+        }
+
+        function triggerSearch() {
+            const val = document.getElementById('searchInput').value;
+            handleSearch(val);
+        }
+
+        // Sort Products
+        function sortProducts(criteria) {
+            let sorted = [...currentFilteredProducts];
+            if (criteria === 'low-high') {
+                sorted.sort((a, b) => a.price - b.price);
+            } else if (criteria === 'high-low') {
+                sorted.sort((a, b) => b.price - a.price);
+            } else if (criteria === 'rating') {
+                sorted.sort((a, b) => b.rating - a.rating);
+            }
+            renderProducts(sorted);
+        }
+
+        // Cart Management
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`${product.name.substring(0, 25)}... added to cart!`);
+        }
+
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartBadge').innerText = totalCount;
+            document.getElementById('cartCountTitle').innerText = totalCount;
+
+            const container = document.getElementById('cartItemsContainer');
+            const footer = document.getElementById('cartFooter');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="py-16 text-center text-gray-500">
+                        <i class="fa-solid fa-cart-arrow-down text-5xl mb-3 text-gray-300"></i>
+                        <p class="font-semibold text-base">Your ASBcart cart is empty!</p>
+                        <p class="text-xs text-gray-400 mt-1">Explore top categories and add items now.</p>
+                    </div>
+                `;
+                footer.classList.add('hidden');
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            container.innerHTML = cart.map(item => `
+                <div class="py-3 flex items-center justify-between gap-4">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded border">
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${item.name}</h4>
+                        <div class="text-flipkart-blue font-bold text-sm mt-0.5">₹${item.price.toLocaleString()}</div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 font-bold flex items-center justify-center text-xs">-</button>
+                            <span class="text-sm font-semibold">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 font-bold flex items-center justify-center text-xs">+</button>
+                        </div>
+                    </div>
+                    <div class="text-right font-bold text-gray-900 text-sm">
+                        ₹${(item.price * item.quantity).toLocaleString()}
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cartSubtotal').innerText = `₹${subtotal.toLocaleString()}`;
+            document.getElementById('cartTotal').innerText = `₹${subtotal.toLocaleString()}`;
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        // Modals
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            closeLoginModal();
+            showToast("OTP sent successfully to your number!");
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) return;
+            toggleCartDrawer();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+        function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            closeCheckoutModal();
+            cart = [];
+            updateCartUI();
+            showToast("Order placed successfully! Thank you for shopping with ASBcart.");
+        }
+
+        // Toast Notification helper
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // Initialize App on Load
+        window.onload = function() {
+            renderProducts(products);
+        };
+    </script>
+</body>
+</html>
